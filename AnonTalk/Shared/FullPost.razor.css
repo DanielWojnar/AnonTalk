@@ -1,0 +1,16 @@
+﻿.image {
+    max-width: 40vw;
+    max-height: 20vh;
+}
+
+.border-black {
+    border-color: #000000 !important;
+}
+
+.text-violet {
+    color: #b294bb !important;
+}
+
+.clear-both {
+    clear: both;
+}

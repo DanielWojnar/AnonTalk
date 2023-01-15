@@ -1,0 +1,79 @@
+﻿@page "/"
+@page "/{BoardId}"
+@page "/{BoardId}/{Reload:bool}"
+@using AnonTalk.Services;
+@using AnonTalk.Models;
+@inject IPostService _postService;
+@inject IBoardService _boradService;
+@inject NavigationManager _navigationManager;
+
+<div class="d-flex w-100 justify-content-center border-bottom border-black pb-5 pt-5 flex-column align-items-center">
+    @if(board != null){
+        <h1> /@board.Id/ - @board.Name </h1>
+    }
+    @if (BoardId != null)
+    {
+        <PostForm BoardId="@BoardId" />
+    }
+</div>
+
+@if(postsLimited != null)
+{
+    @foreach(var postLimited in postsLimited)
+    {
+        <Post PostLimited="@postLimited" />
+    }
+}
+
+@code{
+    [Parameter]
+    public string BoardId { get; set; }
+    [Parameter]
+    public bool Reload { get; set; }
+    [CascadingParameter]
+    public MainLayout Layout { get; set; }
+
+    private List<PostLimited> postsLimited = null;
+    private List<Board> boards = null;
+    private Board board = null;
+    private string oldBoardId = null;
+    private bool oldReload;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (oldBoardId != BoardId || Reload != oldReload)
+        {
+            await LoadData();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        if (BoardId == null)
+        {
+            _navigationManager.NavigateTo("/b");
+            return;
+        }
+        if (Reload)
+        {
+            oldReload = Reload;
+            _navigationManager.NavigateTo("/" + BoardId + "/false");
+            return;
+        }
+        oldBoardId = BoardId;
+        oldReload = Reload;
+        postsLimited = await _postService.GetPostsByBoardId(BoardId);
+        boards = await _boradService.GetBoards();
+        board = boards.Where(x => x.Id == BoardId).FirstOrDefault();
+
+        Layout.BoardId = BoardId;
+        Layout.Boards = boards;
+        Layout.GoBack = false;
+        Layout.StateChanged();
+    }
+}

@@ -1,0 +1,39 @@
+﻿@using AnonTalk.Models;
+
+<div class="w-100 pt-3 px-2">
+    <div>
+        @if(PostLimited.Image)
+        {
+            <img class="img-fluid image float-start me-2" src="@(AppSettings.Api.BaseUrl+PostLimited.ImagePath)" />
+        }
+        <span>
+            @if (PostLimited.Title != null)
+            {
+                <span class="text-violet">@(PostLimited.Title)&nbsp;</span>
+            }
+            <span class="text-white-50">@PostLimited.UploadDate</span>
+            <span class="fw-bold">#@PostLimited.Id <a href="/post/@PostLimited.Id" class="btn btn-dark shadow-none m-0 p-0 mb-1">[Reply]</a></span>
+        </span>
+        <br/>
+        <span>
+            @PostLimited.Content
+        </span>
+    </div>
+</div>
+@if (PostLimited.Comments != null)
+{
+    @foreach (var comment in PostLimited.Comments)
+    {
+        <Comment CommentModel="@comment" />
+    }
+}
+<div class="clear-both" />
+@if (PostLimited.HideComments){
+    <a href="/post/@PostLimited.Id" class="btn btn-dark shadow-none m-0 p-0 mb-1 mx-2">+ show @PostLimited.HiddenComments more replies.</a>
+}
+<hr class="border-0 border-top border-black mt-3" />
+
+@code {
+    [Parameter]
+    public PostLimited PostLimited { get; set; }
+}

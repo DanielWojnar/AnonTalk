@@ -1,0 +1,60 @@
+﻿@page "/post/{PostId:guid}"
+@page "/post/{PostId:guid}/{Reload:bool}"
+@using AnonTalk.Services;
+@using AnonTalk.Models;
+@inject IPostService _postService;
+@inject IBoardService _boradService;
+@inject NavigationManager _navigationManager;
+
+<div class="d-flex w-100 justify-content-center border-bottom border-black pb-5 pt-5 flex-column align-items-center">
+    @if (PostId != null)
+    {
+        <CommentForm PostId="@PostId" />
+    }
+</div>
+@if (post != null)
+{
+    <FullPost PostModel="@post" />
+}
+
+@code {
+    [Parameter]
+    public Guid PostId { get; set; }
+    [Parameter]
+    public bool Reload { get; set; }
+    [CascadingParameter]
+    public MainLayout Layout { get; set; }
+
+    private Guid oldPostId;
+    public bool oldReload;
+    private Models.Post post = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (oldPostId != PostId || Reload != oldReload)
+        {
+            await LoadData();
+        }
+    }
+
+    private async Task LoadData()
+    {
+        if (Reload)
+        {
+            oldReload = Reload;
+            _navigationManager.NavigateTo("/post/" + PostId + "/false");
+            return;
+        }
+        post = await _postService.GetPostById(PostId);
+        oldPostId = PostId;
+        oldReload = Reload;
+        Layout.GoBack = true;
+        Layout.Boards = await _boradService.GetBoards();
+        Layout.StateChanged();
+    }
+}

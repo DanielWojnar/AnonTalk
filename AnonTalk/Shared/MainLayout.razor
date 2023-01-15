@@ -1,0 +1,61 @@
+﻿@inherits LayoutComponentBase
+@using AnonTalk.Models;
+@inject NavigationManager _navigationManager;
+
+<CascadingValue Value="this">
+	<div class="d-flex flex-column bg-dark min-vh-100 w-100 text-white">
+		<div class="position-sticky w-100 bg-dark shadow border-bottom top-0 mb-3 border-dark d-flex">
+			@if (GoBack != null && GoBack == true && BoardId != null)
+			{
+				<a href="/@BoardId" class="btn btn-dark shadow-none mx-0 d-block"><i class="fa-solid fa-arrow-left"></i></a>
+			}
+			@if(BoardId != null)
+			{
+				<a href="/@BoardId/true" class="btn btn-dark shadow-none mx-0 d-block">[ @BoardId ]</a>
+			}
+			@if (Boards != null && Boards.Count > 1)
+			{
+				@if (boardsHidden)
+				{
+					<button @onclick="ShowBoards" class="btn btn-dark shadow-none mx-0 d-block">[ + ]</button>
+				}
+				else
+				{
+					<span class="border-start border-black"></span>
+					@foreach(var board in Boards)
+					{
+						<a href="/@board.Id" class="btn btn-dark shadow-none mx-0 d-block">[ @board.Id ]</a>
+					}
+					<button @onclick="HideBoards" class="btn btn-dark shadow-none mx-0 d-block">[ - ]</button>
+				}
+			}
+		</div>
+		<div class="container-fluid w-100 px-0 mx-0">
+			@Body
+		</div>
+	</div>
+</CascadingValue>
+
+@code
+{
+	public string BoardId { get; set; }
+	public List<Board> Boards { get; set; }
+	public bool? GoBack { get; set; }
+
+	private bool boardsHidden = true;
+
+	public void StateChanged()
+	{
+		StateHasChanged();
+	}
+
+	private void ShowBoards()
+	{
+		boardsHidden = false;
+	}
+
+	private void HideBoards()
+	{
+		boardsHidden = true;
+	}
+}

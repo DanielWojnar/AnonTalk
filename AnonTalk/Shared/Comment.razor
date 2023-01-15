@@ -1,0 +1,20 @@
+﻿@using AnonTalk.Models;
+
+<div class="bg-dark-less p-3 my-3 rounded d-table mx-2">
+    @if (CommentModel.Image)
+    {
+        <img class="img-fluid image float-start me-2" src="@(AppSettings.Api.BaseUrl+CommentModel.ImagePath)" />
+    }
+    <span>
+        <span class="text-white-50">@CommentModel.UploadDate</span>
+        <span class="fw-bold">#@CommentModel.Id</span>
+    </span>
+    <br />
+    <span>
+        @CommentModel.Content
+    </span>
+</div>
+@code {
+    [Parameter]
+    public Models.Comment CommentModel { get; set; }
+}

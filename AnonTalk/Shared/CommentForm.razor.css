@@ -1,0 +1,9 @@
+﻿.btn-dark-less {
+    background-color: #343a40ed;
+    border-color: #343a40ed;
+    color: #ffffff;
+}
+
+.resize-none {
+    resize: none;
+}

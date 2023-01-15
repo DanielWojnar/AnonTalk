@@ -1,0 +1,37 @@
+﻿@using AnonTalk.Models;
+
+<div class="w-100 pt-3 px-2">
+    <div>
+        @if (PostModel.Image)
+        {
+            <img class="img-fluid image float-start me-2" src="@(AppSettings.Api.BaseUrl+PostModel.ImagePath)" />
+        }
+        <span>
+            @if (PostModel.Title != null)
+            {
+                <span class="text-violet">@(PostModel.Title)&nbsp;</span>
+            }
+            <span class="text-white-50">@PostModel.UploadDate</span>
+            <span class="fw-bold">#@PostModel.Id</span>
+        </span>
+        <br />
+        <span>
+            @PostModel.Content
+        </span>
+    </div>
+</div>
+@if (PostModel.Comments != null)
+{
+    @foreach (var comment in PostModel.Comments)
+    {
+        <div class="clear-both" />
+        <Comment CommentModel="@comment" />
+    }
+}
+<div class="clear-both" />
+<hr class="border-0 border-top border-black mt-3" />
+
+@code {
+    [Parameter]
+    public Models.Post PostModel { get; set; }
+}

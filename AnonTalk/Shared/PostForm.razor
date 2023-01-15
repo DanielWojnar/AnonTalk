@@ -1,0 +1,57 @@
+﻿@using AnonTalk.Models;
+@using AnonTalk.Services;
+@inject IPostService _postService;
+@inject NavigationManager _navigationManager;
+
+<EditForm EditContext="@editContext" OnSubmit="@HandleSubmit" class="w-100 justify-content-center d-flex flex-column px-5">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group w-100 py-1">
+        <label for="InputTitle">Title</label>
+        <InputText @bind-Value="postForm.Title" type="text" class="form-control shadow-none" id="InputTitle" aria-describedby="titleHelper" placeholder="Title..." />
+        <small id="titleHelper" class="form-text text-muted">Title is not required.</small>
+    </div>
+    <div class="form-group w-100 py-1">
+        <label for="InputContent">Message</label>
+        <InputTextArea @bind-Value="postForm.Content" class="form-control shadow-none resize-none" id="InputContent" rows="3" aria-describedby="contentHelper" placeholder="What is on my mind..." />
+        <small id="contentHelper" class="form-text text-muted">Message is required.</small>
+    </div>
+    <div class="form-group w-100 py-2">
+        <label for="InputImage">Image</label>
+        <InputFile OnChange="@SetFile" type="file" class="form-control-file" id="InputImage" aria-describedby="imageHelper"/>
+        <br />
+        <small id="imageHelper" class="form-text text-muted">Image is not required.</small>
+    </div>
+    <button type="submit"  class="btn btn-dark-less mt-3 mb-1 shadow-none">Submit</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public string BoardId { get; set; }
+
+    private Models.PostForm postForm = new Models.PostForm();
+    private EditContext? editContext;
+
+    protected override void OnInitialized()
+    {
+        editContext = new(postForm);
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (editContext == null || !editContext.Validate())
+        {
+            return;
+        }
+        var result = await _postService.AddPost(postForm, BoardId);
+        if(!result){
+
+        }
+        _navigationManager.NavigateTo("/" + BoardId + "/true");
+    }
+
+    private void SetFile(InputFileChangeEventArgs e)
+    {
+        postForm.Image = e.File;
+    }
+}

@@ -1,0 +1,53 @@
+﻿@using AnonTalk.Models;
+@using AnonTalk.Services;
+@inject ICommentService _commentService;
+@inject NavigationManager _navigationManager;
+
+<EditForm EditContext="@editContext" OnSubmit="@HandleSubmit" class="w-100 justify-content-center d-flex flex-column px-5">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="form-group w-100 py-1">
+        <label for="InputContent">Message</label>
+        <InputTextArea @bind-Value="commentForm.Content" class="form-control shadow-none resize-none" id="InputContent" rows="3" aria-describedby="contentHelper" placeholder="What is on my mind..." />
+        <small id="contentHelper" class="form-text text-muted">Message is required.</small>
+    </div>
+    <div class="form-group w-100 py-2">
+        <label for="InputImage">Image</label>
+        <InputFile OnChange="@SetFile" type="file" class="form-control-file" id="InputImage" aria-describedby="imageHelper" />
+        <br/>
+        <small id="imageHelper" class="form-text text-muted">Image is not required.</small>
+    </div>
+    <button type="submit" class="btn btn-dark-less mt-3 mb-1 shadow-none">Submit</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public Guid PostId { get; set; }
+
+    private Models.CommentForm commentForm = new Models.CommentForm();
+    private EditContext? editContext;
+
+    protected override void OnInitialized()
+    {
+        editContext = new(commentForm);
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (editContext == null || !editContext.Validate())
+        {
+            return;
+        }
+        var result = await _commentService.AddComment(commentForm, PostId);
+        if (!result)
+        {
+
+        }
+        _navigationManager.NavigateTo("/post/" + PostId + "/true");
+    }
+
+    private void SetFile(InputFileChangeEventArgs e)
+    {
+        commentForm.Image = e.File;
+    }
+}
